@@ -4,7 +4,7 @@ const searchBtn = document.getElementById('search-btn');
 const resultContainer = document.getElementById('result-container');
 
 // !! ZAROORI: Yahan OMDb se mila apna asli API key daalein !!
-const apiKey = "YOUR_API_KEY_HERE";
+const apiKey = "f84610d";
 
 // Function: API se movie data fetch karne ke liye
 const getMovie = () => {
