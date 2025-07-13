@@ -6,14 +6,37 @@
 }
 
 body {
-    background-color: #121212; /* Dark background */
     color: #fff;
+    /* Background image yahan JavaScript se aayegi */
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed; /* Background ko scroll hone se rokta hai */
+    transition: background-image 0.5s ease-in-out; /* Smooth effect */
+    position: relative; /* Yeh zaroori hai */
+    min-height: 100vh;
+}
+
+/* Yeh pseudo-element blur aur dark overlay ke liye hai */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(18, 18, 18, 0.7); /* Thoda kaala overlay */
+    backdrop-filter: blur(5px); /* Asli blur effect */
+    -webkit-backdrop-filter: blur(5px); /* Safari browser ke liye */
+    z-index: -1; /* Ise content ke peeche rakhta hai */
 }
 
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 40px auto;
+    /* Ise overlay ke upar laane ke liye */
+    position: relative;
+    z-index: 1;
 }
 
 .search-container {
@@ -24,7 +47,7 @@ body {
 .search-container h1 {
     font-size: 3em;
     margin-bottom: 20px;
-    color: #00feba; /* Highlight color */
+    color: #00feba;
 }
 
 .search-box {
