@@ -11,9 +11,10 @@ const getMovie = () => {
     const movieName = movieSearchBox.value;
     const url = `https://www.omdbapi.com/?s=${movieName}&apikey=${apiKey}`;
 
-    // Agar search box khaali hai to kuch na karein
+    // Agar search box khaali hai to background saaf karein
     if (movieName.length <= 0) {
         resultContainer.innerHTML = `<h3 style="text-align:center; color:#aaa;">Please enter a movie name</h3>`;
+        document.body.style.backgroundImage = 'none'; // Background hata dein
         return;
     }
 
@@ -23,6 +24,14 @@ const getMovie = () => {
         .then(data => {
             // Agar movie mili to
             if (data.Response === "True") {
+                // NAYA: Pehli movie ka poster background mein lagayein
+                const firstMoviePoster = data.Search[0].Poster;
+                if (firstMoviePoster && firstMoviePoster !== "N/A") {
+                    document.body.style.backgroundImage = `url(${firstMoviePoster})`;
+                } else {
+                    document.body.style.backgroundImage = 'none'; // Agar poster nahi hai to background hata dein
+                }
+
                 resultContainer.innerHTML = ""; // Purane results saaf karein
                 
                 // Har movie ke liye ek card banayein
@@ -30,7 +39,6 @@ const getMovie = () => {
                     const movieCard = document.createElement('div');
                     movieCard.classList.add('movie-card');
 
-                    // Agar poster nahi hai to ek default image dikhayein
                     const posterUrl = movie.Poster === "N/A" ? "https://i.imgur.com/L1dE3dC.png" : movie.Poster;
 
                     movieCard.innerHTML = `
@@ -47,12 +55,13 @@ const getMovie = () => {
             // Agar movie nahi mili to
             else {
                 resultContainer.innerHTML = `<h3 style="text-align:center; color:#aaa;">${data.Error}</h3>`;
+                document.body.style.backgroundImage = 'none'; // Background hata dein
             }
         })
-        // Agar koi aur error aaye to
         .catch(error => {
             console.error("Error:", error);
             resultContainer.innerHTML = `<h3 style="text-align:center; color:red;">An error occurred. Please try again.</h3>`;
+            document.body.style.backgroundImage = 'none'; // Background hata dein
         });
 };
 
@@ -65,3 +74,4 @@ movieSearchBox.addEventListener("keypress", (event) => {
         getMovie();
     }
 });
+
