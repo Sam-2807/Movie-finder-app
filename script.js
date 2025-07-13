@@ -1,96 +1,67 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', sans-serif;
-}
+// Zaroori HTML elements ko select karein
+const movieSearchBox = document.getElementById('movie-name');
+const searchBtn = document.getElementById('search-btn');
+const resultContainer = document.getElementById('result-container');
 
-body {
-    background-color: #121212; /* Dark background */
-    color: #fff;
-}
+// !! ZAROORI: Yahan OMDb se mila apna asli API key daalein !!
+const apiKey = "YOUR_API_KEY_HERE";
 
-.container {
-    width: 90%;
-    max-width: 1200px;
-    margin: 40px auto;
-}
+// Function: API se movie data fetch karne ke liye
+const getMovie = () => {
+    const movieName = movieSearchBox.value;
+    const url = `https://www.omdbapi.com/?s=${movieName}&apikey=${apiKey}`;
 
-.search-container {
-    text-align: center;
-    margin-bottom: 40px;
-}
+    // Agar search box khaali hai to kuch na karein
+    if (movieName.length <= 0) {
+        resultContainer.innerHTML = `<h3 style="text-align:center; color:#aaa;">Please enter a movie name</h3>`;
+        return;
+    }
 
-.search-container h1 {
-    font-size: 3em;
-    margin-bottom: 20px;
-    color: #00feba; /* Highlight color */
-}
+    // API se data fetch karein
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            // Agar movie mili to
+            if (data.Response === "True") {
+                resultContainer.innerHTML = ""; // Purane results saaf karein
+                
+                // Har movie ke liye ek card banayein
+                data.Search.forEach(movie => {
+                    const movieCard = document.createElement('div');
+                    movieCard.classList.add('movie-card');
 
-.search-box {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-}
+                    // Agar poster nahi hai to ek default image dikhayein
+                    const posterUrl = movie.Poster === "N/A" ? "https://i.imgur.com/L1dE3dC.png" : movie.Poster;
 
-#movie-name {
-    width: 60%;
-    max-width: 400px;
-    padding: 15px;
-    font-size: 1em;
-    border: 1px solid #333;
-    border-radius: 8px;
-    background-color: #222;
-    color: #fff;
-}
+                    movieCard.innerHTML = `
+                        <img src="${posterUrl}" alt="${movie.Title}" class="poster">
+                        <div class="movie-info">
+                            <h3>${movie.Title}</h3>
+                            <p><strong>Year:</strong> ${movie.Year}</p>
+                            <p><strong>Type:</strong> ${movie.Type}</p>
+                        </div>
+                    `;
+                    resultContainer.appendChild(movieCard);
+                });
+            } 
+            // Agar movie nahi mili to
+            else {
+                resultContainer.innerHTML = `<h3 style="text-align:center; color:#aaa;">${data.Error}</h3>`;
+            }
+        })
+        // Agar koi aur error aaye to
+        .catch(error => {
+            console.error("Error:", error);
+            resultContainer.innerHTML = `<h3 style="text-align:center; color:red;">An error occurred. Please try again.</h3>`;
+        });
+};
 
-#search-btn {
-    padding: 15px 30px;
-    font-size: 1em;
-    border: none;
-    border-radius: 8px;
-    background-color: #00feba;
-    color: #121212;
-    cursor: pointer;
-    font-weight: bold;
-}
+// Search button par event listener lagayein
+searchBtn.addEventListener('click', getMovie);
 
-#result-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-}
-
-.movie-card {
-    background-color: #222;
-    border-radius: 10px;
-    overflow: hidden;
-    text-align: center;
-    transition: transform 0.3s;
-    border: 1px solid #333;
-}
-
-.movie-card:hover {
-    transform: scale(1.05);
-}
-
-.movie-card .poster {
-    width: 100%;
-    height: 420px;
-    object-fit: cover;
-}
-
-.movie-info {
-    padding: 20px;
-}
-
-.movie-info h3 {
-    font-size: 1.5em;
-    margin-bottom: 10px;
-}
-
-.movie-info p {
-    color: #aaa;
-    text-transform: capitalize;
-}
-
+// Enter dabane par bhi search karne ki suvidha
+movieSearchBox.addEventListener("keypress", (event) => {
+    if (event.key === "Enter") {
+        getMovie();
+    }
+});
